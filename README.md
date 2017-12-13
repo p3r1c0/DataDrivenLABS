@@ -1,2 +1,2 @@
-# LAB1
-DataDrivenLab1
+# LABS
+Directory that store the information about the laboratories...

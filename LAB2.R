@@ -2,20 +2,20 @@
 
 # Utilitzi la funció separada per transformar en columnes diferents la columna CVSS del conjunt de dades CVE. 
 
-variable2 <- tidyr::separate(variable1, columnaData, c("nuevaColumna1","nuevaColumna2","nuevaColumna3"), sep = "/")
+transCols <- tidyr::separate(variable1, columnaData, c("newColumn_1","newColum_2","newColum_3"), sep = "/")
 
 #Creeu una versió simplificada del conjunt de dades anterior que només contingui les columnes més importants.
 
-simplificat <- dpylr::select(previousDataFrame, columnaImportante1, columnaImportante2, columnaImportante3)
+importantColums <- dpylr::select(previousDataFrame, colImp1, colImp2, colImp3)
 
 
 #Desplaceu-vos a la finestra de les funcions que habiliten la mutation ().
-dplyr::mutate(previousDataFrame, totalColumnaSumada = columna1 + columna2 + columna3)
+dplyr::mutate(previousDataFrame, totalColumnaSumada = col1 + col2 + col3)
 
 
 #Combineu dos conjunts de dades diferents utilitzant una operació d'unió de dplyr.
 
-left_joiin(columnaDF1, columnaDF2, by ="columnaDF1")
+left_joiin(colDF1, colDF2, by ="colDF1")
 
 GetCWENamespace <- function(doc, cwe ="100") {
   xpath <- paste("//xsd:schema[@ID = '",
@@ -35,7 +35,7 @@ GetCWENamespace <- function(doc, cwe ="100") {
 
 #Completa funcions definides prèviament perquè el paquet permeti la generació d'un conjunt de dades que contingui la informació analitzada des del fitxer XML CPE.
 #Juntem les llistes en un unic dataFrame
-  df <- plyr::ldply(lcpes)
+  dataFrame <- plyr::ldply(lcpes)
 
   ##........
 #' Get data frame from CVE entry

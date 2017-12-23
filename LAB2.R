@@ -1,26 +1,21 @@
-#Lab 2
+#...---Lab 2---...Pedro Galindo Morey...
 
-#Use the separate function to transform into different columns the CVSS column from the CVE data frame.
+# Utilitzi la funció separada per transformar en columnes diferents la columna CVSS del conjunt de dades CVE. 
 
 variable2 <- tidyr::separate(variable1, columnaData, c("nuevaColumna1","nuevaColumna2","nuevaColumna3"), sep = "/")
 
-#Compare the output produced by summary and glimpse functions to describe the CPE data frame.
+#Creeu una versió simplificada del conjunt de dades anterior que només contingui les columnes més importants.
+
+simplificat <- dpylr::select(previousDataFrame, columnaImportante1, columnaImportante2, columnaImportante3)
 
 
-#Create a simplified version of the previous data frame that only contains the most important columns.
-
-simpliificat <- dpylr::select(previousDataFrame, columnaImportante1, columnaImportante2, columnaImportante3)
-
-
-#Skim into the window functions that empower mutate().
+#Desplaceu-vos a la finestra de les funcions que habiliten la mutation ().
 dplyr::mutate(previousDataFrame, totalColumnaSumada = columna1 + columna2 + columna3)
 
 
-#Combine two different data frames using a join operation from dplyr.
+#Combineu dos conjunts de dades diferents utilitzant una operació d'unió de dplyr.
 
 left_joiin(columnaDF1, columnaDF2, by ="columnaDF1")
-
-#Try to elaborate possible XPATH queries that could extract relevant information.
 
 GetCWENamespace <- function(doc, cwe ="100") {
   xpath <- paste("//xsd:schema[@ID = '",
@@ -38,8 +33,11 @@ GetCWENamespace <- function(doc, cwe ="100") {
   return(XML::xpathApply(doc,xpath))
 }
 
-#Complete previously defined functions so that the package allows the generation of a data frame containing the data parsed from the CPE XML file.
+#Completa funcions definides prèviament perquè el paquet permeti la generació d'un conjunt de dades que contingui la informació analitzada des del fitxer XML CPE.
+#Juntem les llistes en un unic dataFrame
+  df <- plyr::ldply(lcpes)
 
+  ##........
 #' Get data frame from CVE entry
 #'
 #' This function returns a single data frame
@@ -51,13 +49,10 @@ GetCWENamespace <- function(doc, cwe ="100") {
 GetCPEItem <- function(cpe.raw) {
   cpe <- NewCPEItem()
   cpe.raw <- XML::xmlToList(cpe.raw)
-
   # transform the list to data frame
-
   # return data frame
 }
-
-
+ #.....
 #' Get CPE data frame
 #'
 #' The main function to parse CPE XML file. Expects one
@@ -72,12 +67,10 @@ ParseCPEData <- function(cpe.file) {
   doc <- XML::xmlTreeParse(cpe.file)
   cpes.raw <- XML::xmlRoot(doc)
   cpes.raw <- cpes.raw[2:length(cpes.raw)]
-
   # get list of CPEs (each one is a data frame)
   lcpes <- lapply(cpes.raw, GetCPEItem)
-
   # create single data frame from list
-  # ...
-
+  df <- plyr::ldply(lcpes)
   # return data frame
+  return(df)
 }

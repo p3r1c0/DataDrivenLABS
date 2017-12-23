@@ -1,53 +1,68 @@
-#Lab 2
+#Lab 2 -Pedro Galindo Morey-
+No he aconseguit el fitxer necessari per realitzar els primers exercicis del laboratori, aix√≠ que he realitzat els exercicis de manera te√≤rica.
 
-No he conseguido encontrar el fichero necesario para realizar los primeros ejercicios del laboratorio, asÌ que realizado los ejercicios de manera teÛrica.
-
-1- Use the separate function to transform into different columns the CVSS column from the CVE data frame.
-
-Para separar una columna de un data frame en varias columnas utilizaremos la funcion separate() del pakage tidyr. En este mÈtodo, se indicar· el data frame a separar,
-la columna a separar, las nuevas columnas i el texto o car·cter que nos indicar· la separaciÛn:
+1- Utilitzi la funci√≥ separada per transformar en columnes diferents la columna CVSS del conjunt de dades CVE. 
+Per separar una columna de un data frame en diverses columnes utilitzarem la funci√≥ separate() del pakage tidyr. En aquest m√®tode, s'indicar√† el data frame a separar, la columna a separar, las noves columnas i el text o car√†cter que ens indicar√† la separaci√≥:
 
 variable2 <- tidyr::separate(variable1, columnaData, c("nuevaColumna1","nuevaColumna2","nuevaColumna3"), sep = "/")
 
 
-2- Create a simplified version of the previous data frame that only contains the most important columns.
-Para elegir las columnas importantes de un data frame utilizaremos la funcion select() del pakage dpylr. En este mÈtodo,
-se indicar· el data frame de donde cogeremos las columnas importante y cada una de las columnas que extraeremos:
-
-simpliificat <- dpylr::select(previousDataFrame, columnaImportante1, columnaImportante2, columnaImportante3)
+2- Creeu una versi√≥ simplificada del conjunt de dades anterior que nom√©s contingui les columnes m√©s importants.
+Per elegir les columnes importants d'un data frame utilitzarem la funci√≥ select() del pakage dpylr. En aquest m√®tode, s'indicar√† el data frame d'on agafarem les columnes importants i cada una de les columnes que extraurem:
 
 
-3- Skim into the window functions that empower mutate().
-Para juntar columnas de un data frame utilizaremos la funcion mutate() del pakage dpylr. En este mÈtodo,
-se indicar· el data frame de donde cogeremos las columnas el nombre de la columna resultante y las columnas que juntaremos:
+simplificat <- dpylr::select(previousDataFrame, columnaImportante1, columnaImportante2, columnaImportante3)
+
+
+3- Desplaceu-vos a la finestra de les funcions que habiliten la mutation ().
+Per agrupar columnes d'una data frame utilitzarem la funci√≥ mutate() del pakage dpylr. En aquest m√®tode, s'indicar√† el data frame d'on agafarem les columnes, el nom de la columna resultant i la columna que agruparem:
 
 dplyr::mutate(previousDataFrame, totalColumnaSumada = columna1 + columna2 + columna3)
 
 
-4- Combine two different data frames using a join operation from dplyr.
+4- Combineu dos conjunts de dades diferents utilitzant una operaci√≥ d'uni√≥ de dplyr.
+Per realitzar un join de dos data frame podrem utilitzar les diferents funcions, per exemple, left_join(). En aquest m√®tode, s'indicar√† els dos dataframes i la columna en el qual es basar√† el join.
 
-Para realizar un join de dos data frame podremos utilizar las diferentes funciones, por ejemplo, left_join(). En este mÈtodo,
-se indicar· los dos dataframes y la columna en el cual se basar· el join.
 left_joiin(F1, DF2, by ="columnaDF1")
 
-5 - Try to elaborate possible XPATH queries that could extract relevant information.
+5 - Completa funcions definides pr√®viament perqu√® el paquet permeti la generaci√≥ d'un conjunt de dades que contingui la informaci√≥ analitzada des del fitxer XML CPE.
+Amb la comanda seg√ºent conseguirem agrupar les files de data frames en una sola:
 
-Este XPATH obtiene el atributo targetNamespace del primer nodo del XML:
+df <- plyr::ldply(lcpes)
 
-GetCWENamespace <- function(doc, cwe ="100") {
-  xpath <- paste("//xsd:schema[@ID = '",
-                 cwe,
-                 "']/@targetNamespace",
-                 sep = "")
-  return(unlist(XML::xpathApply(doc,xpath))[["targetNamespace"]])
+#' Get data frame from CVE entry
+#'
+#' This function returns a single data frame
+#' of one row containing th details from the
+#' CPE passed as parameter.
+#' @param cpe.raw
+#'
+#' @return data.frame
+GetCPEItem <- function(cpe.raw) {
+  cpe <- NewCPEItem()
+  cpe.raw <- XML::xmlToList(cpe.raw)
+  # transform the list to data frame
+  # return data frame
 }
 
-Este XPATH obtiene la descripciÛn del nodo annotation:
-
-GetCWENamespace <- function(doc, cwe ="100") {
-  xpath <- paste("//xsd:schema[xsd:annotation/xsd:annotation = '",
-                 cwe,
-                 "']",
-                 sep = "")
-  return(XML::xpathApply(doc,xpath))
+#' Get CPE data frame
+#'
+#' The main function to parse CPE XML file. Expects one
+#' parameter representing the file to be parserd.
+#' Internally, makes use of XPath queries and plyr packages
+#' to generate a R data frame with information extracted
+#' from the XML file.
+#' @param cpe.file file, the CPE XML file to be parsed.
+#'
+#' @return data.frame
+ParseCPEData <- function(cpe.file) {
+  doc <- XML::xmlTreeParse(cpe.file)
+  cpes.raw <- XML::xmlRoot(doc)
+  cpes.raw <- cpes.raw[2:length(cpes.raw)]
+  # get list of CPEs (each one is a data frame)
+  lcpes <- lapply(cpes.raw, GetCPEItem)
+  # create single data frame from list
+  df <- plyr::ldply(lcpes)
+  # return data frame
+  return(df)
 }
